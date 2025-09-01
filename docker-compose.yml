@@ -12,6 +12,7 @@ services:
       FAST_LLM: ${FAST_LLM}
       SMART_LLM: ${SMART_LLM}
       STRATEGIC_LLM: ${STRATEGIC_LLM}
+      EMBEDDING: ${EMBEDDING}
       RETRIEVER: ${RETRIEVER}
       CURATE_SOURCES: ${CURATE_SOURCES}
     volumes:
