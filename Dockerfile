@@ -26,7 +26,21 @@ FROM install-browser AS gpt-researcher-install
 ENV PIP_ROOT_USER_ACTION=ignore
 WORKDIR /usr/src/app
 
-# Copy and install Python dependencies in a single layer to optimize cache usage
+# Install system dependencies needed for building Rust/Python extensions
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    git \
+    pkg-config \
+    libssl-dev \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
+
+# Optional: install Rust via rustup (needed for maturin)
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Copy and install Python dependencies
 COPY ./requirements.txt ./requirements.txt
 COPY ./multi_agents/requirements.txt ./multi_agents/requirements.txt
 
