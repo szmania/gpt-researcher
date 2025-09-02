@@ -35,7 +35,7 @@ class DetailedReport:
         self.subtopics = subtopics
         self.headers = headers or {}
         self.complement_source_urls = complement_source_urls
-        
+
         # Initialize researcher with optional MCP parameters
         gpt_researcher_params = {
             "query": self.query,
@@ -50,13 +50,13 @@ class DetailedReport:
             "headers": self.headers,
             "complement_source_urls": self.complement_source_urls,
         }
-        
+
         # Add MCP parameters if provided
         if mcp_configs is not None:
             gpt_researcher_params["mcp_configs"] = mcp_configs
         if mcp_strategy is not None:
             gpt_researcher_params["mcp_strategy"] = mcp_strategy
-            
+
         self.gpt_researcher = GPTResearcher(**gpt_researcher_params)
         self.existing_headers: List[Dict] = []
         self.global_context: List[str] = []
@@ -75,7 +75,10 @@ class DetailedReport:
 
     async def _initial_research(self) -> None:
         await self.gpt_researcher.conduct_research()
-        self.global_context = [dict(t) for t in {tuple(d.items()) for d in self.gpt_researcher.context}]
+        if isinstance(self.gpt_researcher.context, dict):
+            self.global_context = [dict(t) for t in {tuple(d.items()) for d in self.gpt_researcher.context}]
+        else:
+            self.global_context = self.gpt_researcher.context
         self.global_urls = self.gpt_researcher.visited_urls
 
     async def _get_all_subtopics(self) -> List[Dict]:
@@ -140,7 +143,10 @@ class DetailedReport:
         subtopic_report = await subtopic_assistant.write_report(self.existing_headers, relevant_contents)
 
         self.global_written_sections.extend(self.gpt_researcher.extract_sections(subtopic_report))
-        self.global_context = [dict(t) for t in {tuple(d.items()) for d in subtopic_assistant.context}]
+        if isinstance(self.gpt_researcher.context, dict):
+            self.global_context = [dict(t) for t in {tuple(d.items()) for d in subtopic_assistant.context}]
+        else:
+            self.global_context = list(set(subtopic_assistant.context))
         self.global_urls.update(subtopic_assistant.visited_urls)
 
         self.existing_headers.append({
