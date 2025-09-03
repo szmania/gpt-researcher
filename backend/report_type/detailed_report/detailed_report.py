@@ -75,7 +75,7 @@ class DetailedReport:
 
     async def _initial_research(self) -> None:
         await self.gpt_researcher.conduct_research()
-        if isinstance(self.gpt_researcher.context, dict):
+        if self.gpt_researcher.context and isinstance(self.gpt_researcher.context[0], dict):
             self.global_context = [dict(t) for t in {tuple(d.items()) for d in self.gpt_researcher.context}]
         else:
             self.global_context = self.gpt_researcher.context
@@ -123,7 +123,7 @@ class DetailedReport:
             complement_source_urls=self.complement_source_urls,
             source_urls=self.source_urls
         )
-        if isinstance(self.global_context, dict):
+        if self.global_context and isinstance(self.global_context[0], dict):
             subtopic_assistant.context = [dict(t) for t in {tuple(d.items()) for d in self.global_context}]
         else:
             subtopic_assistant.context = list(set(self.global_context))
@@ -145,7 +145,7 @@ class DetailedReport:
         subtopic_report = await subtopic_assistant.write_report(self.existing_headers, relevant_contents)
 
         self.global_written_sections.extend(self.gpt_researcher.extract_sections(subtopic_report))
-        if isinstance(subtopic_assistant.context, dict):
+        if subtopic_assistant.context and isinstance(subtopic_assistant.context[0], dict):
             self.global_context = [dict(t) for t in {tuple(d.items()) for d in subtopic_assistant.context}]
         else:
             self.global_context = list(set(subtopic_assistant.context))
