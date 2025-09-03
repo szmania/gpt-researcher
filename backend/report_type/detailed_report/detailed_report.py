@@ -145,7 +145,7 @@ class DetailedReport:
         subtopic_report = await subtopic_assistant.write_report(self.existing_headers, relevant_contents)
 
         self.global_written_sections.extend(self.gpt_researcher.extract_sections(subtopic_report))
-        if isinstance(self.gpt_researcher.context, dict):
+        if isinstance(subtopic_assistant.context, dict):
             self.global_context = [dict(t) for t in {tuple(d.items()) for d in subtopic_assistant.context}]
         else:
             self.global_context = list(set(subtopic_assistant.context))
