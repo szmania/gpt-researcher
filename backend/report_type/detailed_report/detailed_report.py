@@ -123,8 +123,10 @@ class DetailedReport:
             complement_source_urls=self.complement_source_urls,
             source_urls=self.source_urls
         )
-
-        subtopic_assistant.context = list(set(self.global_context))
+        if isinstance(self.global_context, dict):
+            subtopic_assistant.context = [dict(t) for t in {tuple(d.items()) for d in self.global_context}]
+        else:
+            subtopic_assistant.context = list(set(self.global_context))
         await subtopic_assistant.conduct_research()
 
         draft_section_titles = await subtopic_assistant.get_draft_section_titles(current_subtopic_task)
