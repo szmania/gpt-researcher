@@ -160,6 +160,7 @@ class DetailedReport:
 
     async def _construct_detailed_report(self, introduction: str, report_body: str) -> str:
         toc = self.gpt_researcher.table_of_contents(report_body)
+        self.gpt_researcher.context = self.global_context # Added line
         conclusion = await self.gpt_researcher.write_report_conclusion(report_body)
         conclusion_with_references = self.gpt_researcher.add_references(
             conclusion, self.gpt_researcher.visited_urls)
